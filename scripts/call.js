@@ -2,7 +2,7 @@ const hre = require('hardhat')
 const fs = require('fs')
 const { BigNumber } = require('ethers')
 
-// TestNFT721 deployed: 0x2F7e423eE727aBe5988A92c83722461CbB214DA2
+const TestNFT721Addr = '0x2F7e423eE727aBe5988A92c83722461CbB214DA2'
 
 async function deploy() {
     const accounts = await hre.ethers.getSigners()
@@ -11,6 +11,29 @@ async function deploy() {
     const nft721 = await TestNFT721.deploy()
     await nft721.deployed()
     console.log('TestNFT721 deployed:', nft721.address)
+}
+
+async function view() {
+    const accounts = await hre.ethers.getSigners()
+
+    const TestNFT721 = await ethers.getContractFactory('TestNFT721')
+    const nft721 = await TestNFT721.attach(TestNFT721Addr)
+
+    console.log('baseURI', await nft721.baseURI())
+    console.log('ownerOf', await nft721.ownerOf(20))
+	console.log('tokenURI', await nft721.tokenURI(20))
+}
+
+async function mint() {
+    const accounts = await hre.ethers.getSigners()
+
+    const TestNFT721 = await ethers.getContractFactory('TestNFT721')
+    const nft721 = await TestNFT721.attach(TestNFT721Addr)
+    await nft721.setBaseURI('http://nftdrop.aibyb.com.cn/airdrops/metadatastructure?tokenId=')
+    console.log('setBaseURI done')
+
+    // await nft721.safeMint(accounts[0].address, 20)
+    // console.log('safeMint done')
 }
 
 
@@ -41,7 +64,7 @@ function s(bn) {
 }
 
 
-deploy()
+view()
     .then(() => process.exit(0))
     .catch(error => {
         console.error(error);
